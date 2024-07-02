@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Controls from './components/controls';
+import AddControls from './components/add-Controls';
+import RegulatoryRisk from './components/regulatory-risk';
+import AddRegulatoryrisk from './components/add-regulatoryRisk';
+import RiskCriteria from './components/riskCriteria';
+import AddRiskCriteria from './components/add-riskCriteria';
+import AddSummaryRisk from './components/add-summaryRisk';
+import SummaryRisk from './components/summary-risk';
 
-function App() {
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Controls />} />
+        <Route path="/regulatory-risk" element={<RegulatoryRisk />} />
+        <Route path="/riskCriteria" element={<RiskCriteria />} />
+        <Route path="/add-riskCriteria" element={<AddRiskCriteria />} />
+        <Route path='/add-regulatoryRisk' element={<AddRegulatoryrisk/>}/>
+        <Route path="/add-controls" element={<AddControls />} />
+        <Route path="/add-summaryRisk" element={<AddSummaryRisk />} />
+        <Route path="/summary-risk" element={<SummaryRisk />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
