@@ -8,13 +8,15 @@ import RiskCriteria from './components/riskCriteria';
 import AddRiskCriteria from './components/add-riskCriteria';
 import AddSummaryRisk from './components/add-summaryRisk';
 import SummaryRisk from './components/summary-risk';
+import Onboarding from './components/onboarding';
 
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Controls />} />
+        <Route path='/' element={<Onboarding/>}/>
+        <Route path="/contorls" element={<Controls />} />
         <Route path="/regulatory-risk" element={<RegulatoryRisk />} />
         <Route path="/riskCriteria" element={<RiskCriteria />} />
         <Route path="/add-riskCriteria" element={<AddRiskCriteria />} />
