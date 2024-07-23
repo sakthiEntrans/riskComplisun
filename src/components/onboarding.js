@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState } from "react";
 import {
   Container,
@@ -16,6 +17,9 @@ import {
   CardContent,
   CardHeader,
   Collapse,
+  Tooltip,
+  ClickAwayListener,
+  Modal,
 } from "@mui/material";
 import {
   CloudUpload,
@@ -25,6 +29,7 @@ import {
   ExpandLess,
   Visibility,
   Add,
+  Info,
 } from "@mui/icons-material";
 
 function Onboarding() {
@@ -43,7 +48,19 @@ function Onboarding() {
       uploadedFiles: [],
       expanded: false,
     },
+    legalProceedings1: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
     financialStatements: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
+    financialStatements1: {
       uploading: false,
       uploadProgress: 0,
       uploadedFiles: [],
@@ -56,6 +73,7 @@ function Onboarding() {
       uploadedFiles: [],
       expanded: false,
     },
+
     organizationalChart: {
       uploading: false,
       uploadProgress: 0,
@@ -119,6 +137,9 @@ function Onboarding() {
   };
 
   const [sections, setSections] = useState(initialSectionsState);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState("");
 
   const handleFileUpload = (event, section) => {
     const files = Array.from(event.target.files);
@@ -193,6 +214,7 @@ function Onboarding() {
       },
     }));
   };
+
   const handleRemoveOwner = () => {
     setSections((prevSections) => ({
       ...prevSections,
@@ -216,6 +238,15 @@ function Onboarding() {
         },
       };
     });
+  };
+
+  const handleModalOpen = (content) => {
+    setModalContent(content);
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
   };
 
   const renderUploadSection = (section, label) => {
@@ -417,7 +448,6 @@ function Onboarding() {
               />
             </>
           )}
-
           {renderSection(
             "contactDetails",
             "2. Contact Details",
@@ -449,13 +479,13 @@ function Onboarding() {
               <TextField
                 fullWidth
                 margin="normal"
-                label="General Email"
+                label="Secondary Email"
                 required
               />
               <TextField
                 fullWidth
                 margin="normal"
-                label="General Phone Number"
+                label="Secondary Phone Number"
                 required
               />
               <TextField
@@ -466,7 +496,6 @@ function Onboarding() {
               />
             </>
           )}
-
           {renderSection(
             "companyIdentification",
             "3. Company Identification",
@@ -479,7 +508,6 @@ function Onboarding() {
               />
             </>
           )}
-
           {renderSection(
             "ownershipInformation",
             "4. Ownership Information",
@@ -528,7 +556,6 @@ function Onboarding() {
               </Button>
             </>
           )}
-
           {renderSection(
             "relatedCompanies",
             "5. Related Companies",
@@ -547,27 +574,52 @@ function Onboarding() {
               />
             </>
           )}
-
           {renderSection(
             "legalProceedings",
-            "6. Legal Proceedings/Consent Orders",
+            "6. A.Material Legal or Regulatory Proceedings/Consent Orders",
             <>
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Description of Proceedings/Orders"
-                required
-              />
-              <TextField fullWidth margin="normal" label="Status" required />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Relevant Dates"
-                required
-              />
-              {renderUploadSection(
-                "legalProceedings",
-                "Upload Supporting Documents"
+              <Box>
+                <Typography variant="h5">
+                  Material Matters
+                  <IconButton
+                    aria-label="info"
+                    onClick={() =>
+                      handleModalOpen(
+                        "Regulatory or litigation matters that could significantly impact the day-to-day operations of your company, such as a fine exceeding 10% of your revenue. This also includes any legal issues that, if unfavorable, would cause a partner institution to have considerable concern about your ability to perform under a contract."
+                      )
+                    }
+                  >
+                    <Info color="primary" />
+                  </IconButton>
+                </Typography>
+              </Box>
+              {renderSection(
+                "legalProceedings1",
+                "B. Legal proceedings/Consent orders",
+                <>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Description of Proceedings/Orders"
+                    required
+                  />
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Status"
+                    required
+                  />
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Relevant Dates"
+                    required
+                  />
+                  {renderUploadSection(
+                    "legalProceedings",
+                    "Upload Supporting Documents"
+                  )}
+                </>
               )}
             </>
           )}
@@ -575,11 +627,29 @@ function Onboarding() {
           {renderSection(
             "financialStatements",
             "7. Financial Information",
+
             <>
-              {renderUploadSection(
+              {renderSection(
                 "financialStatements",
-                "Recent Financial Statements"
+
+                <Box>
+                  <Typography variant="h5">
+                    A. Audited Financial Statement
+                    <IconButton
+                      aria-label="info"
+                      onClick={() =>
+                        handleModalOpen(
+                          "If an audited financial statement is not available, please provide management certified financial statements along with explanation of why audited financials were not available."
+                        )
+                      }
+                    >
+                      <Info color="primary" />
+                    </IconButton>
+                  </Typography>
+                </Box>
               )}
+
+              {renderUploadSection("financialStatements")}
               {renderSection(
                 "insuranceDetails",
                 "Insurance Details",
@@ -605,84 +675,144 @@ function Onboarding() {
                 </>
               )}
 
-              {renderUploadSection(
+              {renderSection(
                 "insuranceCertificates",
-                "Insurance Certificates"
+                "B. Insurance Certificates",
+                <>
+                  <Box>
+                    <Typography variant="h5">
+                      Insurance Certificates
+                      <IconButton
+                        aria-label="info"
+                        onClick={() =>
+                          handleModalOpen(
+                            "Please ensure to include Cyber Liability Insurance, EO Insurance, and General Liability Insurance. If any of those policies are not available, please provide a written explanation of why they are not available."
+                          )
+                        }
+                      >
+                        <Info color="primary" />
+                      </IconButton>
+                    </Typography>
+                  </Box>
+                  {renderUploadSection("insuranceCertificates")}
+                </>
               )}
             </>
           )}
-
           {renderSection(
             "organizationalChart",
             "8. Corporate Formalities",
             <>
-              {renderUploadSection(
-                "organizationalChart",
-                "Organizational Chart"
-              )}
-              {renderUploadSection("corporateDocuments", "Corporate Documents")}
+              <Box>
+                <Typography variant="h5">
+                  Corporate Formalities
+                  <IconButton
+                    aria-label="info"
+                    onClick={() =>
+                      handleModalOpen(
+                        "Corporate formalities should include organizational documents (e.g., Operating Agreements for LLCs, Bylaws for corporations), a certificate of good standing, and a corporate resolution or similar document confirming signing authority."
+                      )
+                    }
+                  >
+                    <Info color="primary" />
+                  </IconButton>
+                </Typography>
+              </Box>{" "}
+              <>
+                {renderUploadSection(
+                  "organizationalChart",
+                  "Organizational Chart"
+                )}
+                {renderUploadSection(
+                  "corporateDocuments",
+                  "Corporate Documents"
+                )}
+              </>
             </>
           )}
-
           {renderSection(
             "compliancePolicies",
             "9. Compliance Management System Components",
             <>
-              {renderUploadSection(
-                "compliancePolicies",
-                "Compliance Policies and Procedures"
-              )}
-              {renderUploadSection("auditReports", "Latest Audit Reports")}
-              {renderUploadSection("soc2Report", "SOC 2 Report")}
-              {renderUploadSection(
-                "trainingPrograms",
-                "Training Program Descriptions and Records"
-              )}
+              <Box>
+                <Typography variant="h6">
+                  Compliance Management System Components
+                  <IconButton
+                    aria-label="info"
+                    onClick={() =>
+                      handleModalOpen(
+                        "Please upload all relevant Policies, procedures, and guidelines related to your current Compliance Management System (“CMS”). Your CMS should include, as applicable, a/an AI Governance Policy, BSA/AML/OFAC Policy, Complaint Management Policy, Credit Policy, Disaster Recovery Plan, Fair Credit Reporting Policy, Fair Lending Policy, Information Security Policy, Loan Servicing Policy, Record Retention Policy or Schedule, Reg. E & E-Sign Policy, Risk Management Policy, Privacy Policy, Reg. Z Policy, Regulatory Compliance Policy, Third-Party Risk Management Policy, and UDAAP Policy, or similar Policies along with related procedures and training"
+                      )
+                    }
+                  >
+                    <Info color="primary" />
+                  </IconButton>
+                </Typography>
+              </Box>
+              <>
+                <>
+                  {renderUploadSection(
+                    "compliancePolicies",
+                    "Compliance Policies and Procedures"
+                  )}
+                  {renderUploadSection("auditReports", "Latest Audit Reports")}
+                  {renderUploadSection("soc2Report", "SOC 2 Report")}
+                  {renderUploadSection(
+                    "trainingPrograms",
+                    "Training Program Descriptions and Records"
+                  )}
+                </>
+              </>
             </>
           )}
-
           {renderSection(
             "executiveBios",
             "10. Executive Information",
             <>
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Executive Bios - Name"
-                required
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Executive Bios - Title"
-                required
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Executive Bios - Bio Summary"
-                required
-              />
-              {renderUploadSection("executiveBios", "Detailed Executive Bios")}
+              <>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Executive Bios - Name"
+                  required
+                />
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Executive Bios - Title"
+                  required
+                />
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Executive Bios - Bio Summary"
+                  required
+                />
+                {renderUploadSection(
+                  "executiveBios",
+                  "Detailed Executive Bios"
+                )}
+              </>
             </>
           )}
-
           {renderSection(
             "complianceCertifications",
             "11. Additional Relevant Information",
             <>
-              {renderUploadSection(
-                "complianceCertifications",
-                "Relevant Certifications"
-              )}
-              {renderUploadSection(
-                "riskManagementPlans",
-                "Risk Management Documentation"
-              )}
-              {renderUploadSection(
-                "incidentResponsePlans",
-                "Incident Response Plans"
-              )}
+              <>
+                {renderUploadSection(
+                  "complianceCertifications",
+                  "Relevant Certifications"
+                )}
+                {renderUploadSection(
+                  "riskManagementPlans",
+                  "Risk Management Documentation"
+                )}
+                {renderUploadSection(
+                  "incidentResponsePlans",
+                  "Incident Response Plans"
+                )}
+              </>
             </>
           )}
         </Box>
@@ -702,6 +832,31 @@ function Onboarding() {
           </Button>
         </div>
       </Box>
+      <Modal open={modalOpen} onClose={handleModalClose}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" component="h2">
+            Information
+          </Typography>
+          <Typography sx={{ mt: 2 }}>{modalContent}</Typography>
+          <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+            <Button onClick={handleModalClose} color="primary">
+              Close
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Container>
   );
 }
