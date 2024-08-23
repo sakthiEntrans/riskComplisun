@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
   Container,
   TextField,
@@ -39,8 +40,9 @@ function Onboarding() {
     companyIdentification: { expanded: false },
     ownershipInformation: {
       expanded: false,
-      owners: [{ name: "", percentage: "" }],
+      owners: [{ id: uuidv4(), name: "", percentage: "" }],
     },
+
     relatedCompanies: { expanded: false },
     legalProceedings: {
       uploading: false,
@@ -209,26 +211,28 @@ function Onboarding() {
         ...prevSections.ownershipInformation,
         owners: [
           ...prevSections.ownershipInformation.owners,
-          { name: "", percentage: "" },
+          { id: uuidv4(), name: "", percentage: "" },
         ],
       },
     }));
   };
 
-  const handleRemoveOwner = () => {
+  const handleRemoveOwner = (idToRemove) => {
     setSections((prevSections) => ({
       ...prevSections,
       ownershipInformation: {
         ...prevSections.ownershipInformation,
-        owners: [...prevSections.ownershipInformation.owners.slice(0, -1)],
+        owners: prevSections.ownershipInformation.owners.filter(
+          (owner) => owner.id !== idToRemove
+        ),
       },
     }));
   };
 
-  const handleOwnerChange = (index, field, value) => {
+  const handleOwnerChange = (id, field, value) => {
     setSections((prevSections) => {
       const updatedOwners = prevSections.ownershipInformation.owners.map(
-        (owner, i) => (i === index ? { ...owner, [field]: value } : owner)
+        (owner) => (owner.id === id ? { ...owner, [field]: value } : owner)
       );
       return {
         ...prevSections,
@@ -239,7 +243,6 @@ function Onboarding() {
       };
     });
   };
-
   const handleModalOpen = (content) => {
     setModalContent(content);
     setModalOpen(true);
@@ -310,74 +313,79 @@ function Onboarding() {
                 </Box>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    border: "1px solid #ccc",
-                    borderRadius: 1,
-                    p: 2,
-                    height: "100%",
-                    overflowY: "auto",
-                    backgroundColor: "#f9f9f9",
-                  }}
-                >
-                  <Typography variant="subtitle1" gutterBottom>
-                    Uploaded Files
-                  </Typography>
-                  {uploadedFiles.length > 0 ? (
-                    <List>
-                      {uploadedFiles.map((file, index) => (
-                        <ListItem
-                          key={index}
-                          sx={{
-                            mb: 1,
-                            p: 1,
-                            border: "1px solid #ccc",
-                            borderRadius: 1,
-                            backgroundColor: "#fff",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              flex: 1,
-                              mr: 2,
-                            }}
-                          >
-                            <InsertDriveFile sx={{ mr: 2, color: "#1C509D" }} />
-                            <ListItemText primary={file.name} />
-                          </Box>
-                          <Box>
-                            <IconButton
-                              edge="end"
-                              aria-label="view"
-                              onClick={() => handleViewFile(file.url)}
-                            >
-                              <Visibility />
-                            </IconButton>
-                            <IconButton
-                              edge="end"
-                              aria-label="delete"
-                              onClick={() =>
-                                handleDeleteFile(section, file.name)
-                              }
-                            >
-                              <Delete />
-                            </IconButton>
-                          </Box>
-                        </ListItem>
-                      ))}
-                    </List>
-                  ) : (
-                    <Typography variant="body2">
-                      No files uploaded yet.
-                    </Typography>
-                  )}
-                </Box>
-              </Grid>
+  <Box
+    sx={{
+      border: "1px solid #ccc",
+      borderRadius: 1,
+      p: 2,
+      height: "100%",
+      overflowY: "auto",
+      backgroundColor: "#f9f9f9",
+    }}
+  >
+    <Typography variant="subtitle1" gutterBottom>
+      Uploaded Files
+    </Typography>
+    {uploadedFiles.length > 0 ? (
+      <List>
+        {uploadedFiles.map((file, index) => (
+          <ListItem
+            key={index}
+            sx={{
+              mb: 1,
+              p: 1,
+              border: "1px solid #ccc",
+              borderRadius: 1,
+              backgroundColor: "#fff",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                flex: 1,
+                mr: 2,
+              }}
+            >
+              <InsertDriveFile sx={{ mr: 2, color: "#1C509D" }} />
+              <ListItemText
+                primary={file.name}
+                sx={{
+                  wordBreak: "break-all", // Forces the long text to wrap
+                  overflow: "hidden",     // Prevents overflow
+                  textOverflow: "ellipsis", // Optional: Truncates text with ellipsis if needed
+                  whiteSpace: "normal",   // Ensures wrapping is allowed
+                }}
+              />
+            </Box>
+            <Box>
+              <IconButton
+                edge="end"
+                aria-label="view"
+                onClick={() => handleViewFile(file.url)}
+              >
+                <Visibility />
+              </IconButton>
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={() => handleDeleteFile(section, file.name)}
+              >
+                <Delete />
+              </IconButton>
+            </Box>
+          </ListItem>
+        ))}
+      </List>
+    ) : (
+      <Typography variant="body2">No files uploaded yet.</Typography>
+    )}
+  </Box>
+</Grid>
+
             </Grid>
           </CardContent>
         </Collapse>
@@ -421,7 +429,7 @@ function Onboarding() {
             width: "100%",
           }}
         >
-          <Typography variant="h6">Third-Party Onboarding Form</Typography>
+          <Typography variant="h6">Onboarding Form</Typography>
         </Box>
         <Box sx={{ p: 4 }}>
           {renderSection(
@@ -467,30 +475,35 @@ function Onboarding() {
               <TextField
                 fullWidth
                 margin="normal"
+                type="email"
                 label="Key Contact Person - Email"
                 required
               />
               <TextField
                 fullWidth
                 margin="normal"
+                type="tel"
                 label="Key Contact Person - Phone Number"
                 required
               />
               <TextField
                 fullWidth
                 margin="normal"
+                type="email"
                 label="Secondary Email"
                 required
               />
               <TextField
                 fullWidth
                 margin="normal"
+                type="tel"
                 label="Secondary Phone Number"
                 required
               />
               <TextField
                 fullWidth
                 margin="normal"
+                type="url"
                 label="Website URL"
                 required
               />
@@ -504,6 +517,8 @@ function Onboarding() {
                 fullWidth
                 margin="normal"
                 label="Employer Identification Number (EIN)"
+                type="text"
+                inputProps={{ pattern: "[0-9]{9}" }}
                 required
               />
             </>
@@ -513,13 +528,13 @@ function Onboarding() {
             "4. Ownership Information",
             <>
               {sections.ownershipInformation.owners.map((owner, index) => (
-                <Box key={index} sx={{ mb: 2 }}>
+                <Box key={owner.id} sx={{ mb: 2 }}>
                   <Typography variant="h6">
-                    Owner {index + 1}{" "}
+                    Owner{index + 1}
                     <IconButton
                       edge="end"
                       aria-label="delete"
-                      onClick={() => handleRemoveOwner()}
+                      onClick={() => handleRemoveOwner(owner.id)} // Pass the unique id
                     >
                       <Delete style={{ color: "red" }} />
                     </IconButton>
@@ -531,7 +546,7 @@ function Onboarding() {
                     label="Name"
                     value={owner.name}
                     onChange={(e) =>
-                      handleOwnerChange(index, "name", e.target.value)
+                      handleOwnerChange(owner.id, "name", e.target.value)
                     }
                     required
                   />
@@ -541,7 +556,7 @@ function Onboarding() {
                     label="Ownership Percentage"
                     value={owner.percentage}
                     onChange={(e) =>
-                      handleOwnerChange(index, "percentage", e.target.value)
+                      handleOwnerChange(owner.id, "percentage", e.target.value)
                     }
                     required
                   />
@@ -556,6 +571,7 @@ function Onboarding() {
               </Button>
             </>
           )}
+
           {renderSection(
             "relatedCompanies",
             "5. Related Companies",
@@ -613,8 +629,13 @@ function Onboarding() {
                     fullWidth
                     margin="normal"
                     label="Relevant Dates"
+                    type="date" // Date picker type
+                    InputLabelProps={{
+                      shrink: true, // Ensures the label doesn't overlap with the date placeholder
+                    }}
                     required
                   />
+
                   {renderUploadSection(
                     "legalProceedings",
                     "Upload Supporting Documents"
@@ -664,12 +685,19 @@ function Onboarding() {
                     fullWidth
                     margin="normal"
                     label="Coverage Amounts"
+                    type="number" // Numeric input type
+                    inputProps={{ min: 0 }} // Optional: Ensures that only positive numbers are allowed
                     required
                   />
+
                   <TextField
                     fullWidth
                     margin="normal"
                     label="Expiry Dates"
+                    type="date" // Date picker type
+                    InputLabelProps={{
+                      shrink: true, // Ensures the label doesn't overlap with the date placeholder
+                    }}
                     required
                   />
                 </>
