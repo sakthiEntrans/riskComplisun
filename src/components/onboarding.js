@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -19,7 +18,6 @@ import {
   CardHeader,
   Collapse,
   Tooltip,
-  ClickAwayListener,
   Modal,
 } from "@mui/material";
 import {
@@ -42,7 +40,6 @@ function Onboarding() {
       expanded: false,
       owners: [{ id: uuidv4(), name: "", percentage: "" }],
     },
-
     relatedCompanies: { expanded: false },
     legalProceedings: {
       uploading: false,
@@ -75,7 +72,6 @@ function Onboarding() {
       uploadedFiles: [],
       expanded: false,
     },
-
     organizationalChart: {
       uploading: false,
       uploadProgress: 0,
@@ -139,7 +135,6 @@ function Onboarding() {
   };
 
   const [sections, setSections] = useState(initialSectionsState);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
 
@@ -243,6 +238,7 @@ function Onboarding() {
       };
     });
   };
+
   const handleModalOpen = (content) => {
     setModalContent(content);
     setModalOpen(true);
@@ -250,6 +246,16 @@ function Onboarding() {
 
   const handleModalClose = () => {
     setModalOpen(false);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (event, section) => {
+    event.preventDefault();
+    const files = Array.from(event.dataTransfer.files);
+    handleFileUpload({ target: { files } }, section);
   };
 
   const renderUploadSection = (section, label) => {
@@ -262,7 +268,12 @@ function Onboarding() {
           title={label}
           onClick={() => toggleSection(section)}
           action={
-            <IconButton onClick={() => toggleSection(section)}>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents CardHeader click from triggering
+                toggleSection(section);
+              }}
+            >
               {expanded ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           }
@@ -270,7 +281,13 @@ function Onboarding() {
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                onDragOver={handleDragOver}
+                onDrop={(event) => handleDrop(event, section)}
+              >
                 <Box
                   sx={{
                     display: "flex",
@@ -313,79 +330,82 @@ function Onboarding() {
                 </Box>
               </Grid>
               <Grid item xs={12} md={6}>
-  <Box
-    sx={{
-      border: "1px solid #ccc",
-      borderRadius: 1,
-      p: 2,
-      height: "100%",
-      overflowY: "auto",
-      backgroundColor: "#f9f9f9",
-    }}
-  >
-    <Typography variant="subtitle1" gutterBottom>
-      Uploaded Files
-    </Typography>
-    {uploadedFiles.length > 0 ? (
-      <List>
-        {uploadedFiles.map((file, index) => (
-          <ListItem
-            key={index}
-            sx={{
-              mb: 1,
-              p: 1,
-              border: "1px solid #ccc",
-              borderRadius: 1,
-              backgroundColor: "#fff",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                flex: 1,
-                mr: 2,
-              }}
-            >
-              <InsertDriveFile sx={{ mr: 2, color: "#1C509D" }} />
-              <ListItemText
-                primary={file.name}
-                sx={{
-                  wordBreak: "break-all", // Forces the long text to wrap
-                  overflow: "hidden",     // Prevents overflow
-                  textOverflow: "ellipsis", // Optional: Truncates text with ellipsis if needed
-                  whiteSpace: "normal",   // Ensures wrapping is allowed
-                }}
-              />
-            </Box>
-            <Box>
-              <IconButton
-                edge="end"
-                aria-label="view"
-                onClick={() => handleViewFile(file.url)}
-              >
-                <Visibility />
-              </IconButton>
-              <IconButton
-                edge="end"
-                aria-label="delete"
-                onClick={() => handleDeleteFile(section, file.name)}
-              >
-                <Delete />
-              </IconButton>
-            </Box>
-          </ListItem>
-        ))}
-      </List>
-    ) : (
-      <Typography variant="body2">No files uploaded yet.</Typography>
-    )}
-  </Box>
-</Grid>
-
+                <Box
+                  sx={{
+                    border: "1px solid #ccc",
+                    borderRadius: 1,
+                    p: 2,
+                    height: "100%",
+                    overflowY: "auto",
+                    backgroundColor: "#f9f9f9",
+                  }}
+                >
+                  <Typography variant="subtitle1" gutterBottom>
+                    Uploaded Files
+                  </Typography>
+                  {uploadedFiles.length > 0 ? (
+                    <List>
+                      {uploadedFiles.map((file, index) => (
+                        <ListItem
+                          key={index}
+                          sx={{
+                            mb: 1,
+                            p: 1,
+                            border: "1px solid #ccc",
+                            borderRadius: 1,
+                            backgroundColor: "#fff",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              flex: 1,
+                              mr: 2,
+                            }}
+                          >
+                            <InsertDriveFile sx={{ mr: 2, color: "#1C509D" }} />
+                            <ListItemText
+                              primary={file.name}
+                              sx={{
+                                wordBreak: "break-all",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "normal",
+                              }}
+                            />
+                          </Box>
+                          <Box>
+                            <IconButton
+                              edge="end"
+                              aria-label="view"
+                              onClick={() => handleViewFile(file.url)}
+                            >
+                              <Visibility />
+                            </IconButton>
+                            <IconButton
+                              edge="end"
+                              aria-label="delete"
+                              onClick={() =>
+                                handleDeleteFile(section, file.name)
+                              }
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Box>
+                        </ListItem>
+                      ))}
+                    </List>
+                  ) : (
+                    <Typography variant="body2">
+                      No files uploaded yet.
+                    </Typography>
+                  )}
+                </Box>
+              </Grid>
             </Grid>
           </CardContent>
         </Collapse>
@@ -400,9 +420,14 @@ function Onboarding() {
       <Card sx={{ mt: 2 }} key={section}>
         <CardHeader
           title={label}
-          onClick={() => toggleSection(section)}
+          onClick={() => toggleSection(section)} // CardHeader click handler
           action={
-            <IconButton onClick={() => toggleSection(section)}>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent CardHeader onClick from being triggered
+                toggleSection(section);
+              }}
+            >
               {expanded ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           }
@@ -530,11 +555,11 @@ function Onboarding() {
               {sections.ownershipInformation.owners.map((owner, index) => (
                 <Box key={owner.id} sx={{ mb: 2 }}>
                   <Typography variant="h6">
-                    Owner{index + 1}
+                    Owner {index + 1}
                     <IconButton
                       edge="end"
                       aria-label="delete"
-                      onClick={() => handleRemoveOwner(owner.id)} // Pass the unique id
+                      onClick={() => handleRemoveOwner(owner.id)}
                     >
                       <Delete style={{ color: "red" }} />
                     </IconButton>
@@ -599,11 +624,12 @@ function Onboarding() {
                   Material Matters
                   <IconButton
                     aria-label="info"
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleModalOpen(
                         "Regulatory or litigation matters that could significantly impact the day-to-day operations of your company, such as a fine exceeding 10% of your revenue. This also includes any legal issues that, if unfavorable, would cause a partner institution to have considerable concern about your ability to perform under a contract."
-                      )
-                    }
+                      );
+                    }}
                   >
                     <Info color="primary" />
                   </IconButton>
@@ -629,9 +655,9 @@ function Onboarding() {
                     fullWidth
                     margin="normal"
                     label="Relevant Dates"
-                    type="date" // Date picker type
+                    type="date"
                     InputLabelProps={{
-                      shrink: true, // Ensures the label doesn't overlap with the date placeholder
+                      shrink: true,
                     }}
                     required
                   />
@@ -648,28 +674,26 @@ function Onboarding() {
           {renderSection(
             "financialStatements",
             "7. Financial Information",
-
             <>
               {renderSection(
                 "financialStatements",
-
                 <Box>
                   <Typography variant="h5">
                     A. Audited Financial Statement
                     <IconButton
                       aria-label="info"
-                      onClick={() =>
+                      onClick={(e) => {
+                        e.stopPropagation();
                         handleModalOpen(
                           "If an audited financial statement is not available, please provide management certified financial statements along with explanation of why audited financials were not available."
-                        )
-                      }
+                        );
+                      }}
                     >
                       <Info color="primary" />
                     </IconButton>
                   </Typography>
                 </Box>
               )}
-
               {renderUploadSection("financialStatements")}
               {renderSection(
                 "insuranceDetails",
@@ -685,8 +709,8 @@ function Onboarding() {
                     fullWidth
                     margin="normal"
                     label="Coverage Amounts"
-                    type="number" // Numeric input type
-                    inputProps={{ min: 0 }} // Optional: Ensures that only positive numbers are allowed
+                    type="number"
+                    inputProps={{ min: 0 }}
                     required
                   />
 
@@ -694,15 +718,14 @@ function Onboarding() {
                     fullWidth
                     margin="normal"
                     label="Expiry Dates"
-                    type="date" // Date picker type
+                    type="date"
                     InputLabelProps={{
-                      shrink: true, // Ensures the label doesn't overlap with the date placeholder
+                      shrink: true,
                     }}
                     required
                   />
                 </>
               )}
-
               {renderSection(
                 "insuranceCertificates",
                 "B. Insurance Certificates",
@@ -712,11 +735,12 @@ function Onboarding() {
                       Insurance Certificates
                       <IconButton
                         aria-label="info"
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleModalOpen(
                             "Please ensure to include Cyber Liability Insurance, EO Insurance, and General Liability Insurance. If any of those policies are not available, please provide a written explanation of why they are not available."
-                          )
-                        }
+                          );
+                        }}
                       >
                         <Info color="primary" />
                       </IconButton>
@@ -736,16 +760,17 @@ function Onboarding() {
                   Corporate Formalities
                   <IconButton
                     aria-label="info"
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleModalOpen(
                         "Corporate formalities should include organizational documents (e.g., Operating Agreements for LLCs, Bylaws for corporations), a certificate of good standing, and a corporate resolution or similar document confirming signing authority."
-                      )
-                    }
+                      );
+                    }}
                   >
                     <Info color="primary" />
                   </IconButton>
                 </Typography>
-              </Box>{" "}
+              </Box>
               <>
                 {renderUploadSection(
                   "organizationalChart",
@@ -767,29 +792,28 @@ function Onboarding() {
                   Compliance Management System Components
                   <IconButton
                     aria-label="info"
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleModalOpen(
                         "Please upload all relevant Policies, procedures, and guidelines related to your current Compliance Management System (“CMS”). Your CMS should include, as applicable, a/an AI Governance Policy, BSA/AML/OFAC Policy, Complaint Management Policy, Credit Policy, Disaster Recovery Plan, Fair Credit Reporting Policy, Fair Lending Policy, Information Security Policy, Loan Servicing Policy, Record Retention Policy or Schedule, Reg. E & E-Sign Policy, Risk Management Policy, Privacy Policy, Reg. Z Policy, Regulatory Compliance Policy, Third-Party Risk Management Policy, and UDAAP Policy, or similar Policies along with related procedures and training"
-                      )
-                    }
+                      );
+                    }}
                   >
                     <Info color="primary" />
                   </IconButton>
                 </Typography>
               </Box>
               <>
-                <>
-                  {renderUploadSection(
-                    "compliancePolicies",
-                    "Compliance Policies and Procedures"
-                  )}
-                  {renderUploadSection("auditReports", "Latest Audit Reports")}
-                  {renderUploadSection("soc2Report", "SOC 2 Report")}
-                  {renderUploadSection(
-                    "trainingPrograms",
-                    "Training Program Descriptions and Records"
-                  )}
-                </>
+                {renderUploadSection(
+                  "compliancePolicies",
+                  "Compliance Policies and Procedures"
+                )}
+                {renderUploadSection("auditReports", "Latest Audit Reports")}
+                {renderUploadSection("soc2Report", "SOC 2 Report")}
+                {renderUploadSection(
+                  "trainingPrograms",
+                  "Training Program Descriptions and Records"
+                )}
               </>
             </>
           )}
@@ -827,20 +851,18 @@ function Onboarding() {
             "complianceCertifications",
             "11. Additional Relevant Information",
             <>
-              <>
-                {renderUploadSection(
-                  "complianceCertifications",
-                  "Relevant Certifications"
-                )}
-                {renderUploadSection(
-                  "riskManagementPlans",
-                  "Risk Management Documentation"
-                )}
-                {renderUploadSection(
-                  "incidentResponsePlans",
-                  "Incident Response Plans"
-                )}
-              </>
+              {renderUploadSection(
+                "complianceCertifications",
+                "Relevant Certifications"
+              )}
+              {renderUploadSection(
+                "riskManagementPlans",
+                "Risk Management Documentation"
+              )}
+              {renderUploadSection(
+                "incidentResponsePlans",
+                "Incident Response Plans"
+              )}
             </>
           )}
         </Box>
