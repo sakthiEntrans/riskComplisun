@@ -18,6 +18,7 @@ import {
   CardHeader,
   Collapse,
   Modal,
+  Tooltip,
 } from "@mui/material";
 import {
   CloudUpload,
@@ -54,6 +55,48 @@ function Onboarding() {
       expanded: false,
     },
     legalProceedings1: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
+    Chart: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
+    Relevant: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
+    CompliancePolicies: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
+    SupportingDocuments: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
+    DetailedExecutive: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
+    AuditedFinancial: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
+    MaterialLegal: {
       uploading: false,
       uploadProgress: 0,
       uploadedFiles: [],
@@ -114,12 +157,18 @@ function Onboarding() {
       uploadedFiles: [],
       expanded: false,
     },
-collapse: {
-  uploading: false,
-  uploadProgress: 0,
-  uploadedFiles: [],
-  expanded: false,
-},
+    collapse: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
+    collapsive: {
+      uploading: false,
+      uploadProgress: 0,
+      uploadedFiles: [],
+      expanded: false,
+    },
     complianceCertifications: {
       uploading: false,
       uploadProgress: 0,
@@ -848,27 +897,25 @@ collapse: {
 
             {renderSection(
               "legalProceedings",
-              "6. A.Material Legal or Regulatory Proceedings/Consent Orders",
               <>
-                <Box>
-                  <Typography variant="h5">
-                    Material Matters
-                    <IconButton
-                      aria-label="info"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleModalOpen(
-                          "Regulatory or litigation matters that could significantly impact the day-to-day operations of your company, such as a fine exceeding 10% of your revenue. This also includes any legal issues that, if unfavorable, would cause a partner institution to have considerable concern about your ability to perform under a contract."
-                        );
-                      }}
-                    >
-                      <Info color="primary" />
-                    </IconButton>
-                  </Typography>
-                </Box>
+                6.Material Legal or Regulatory Proceedings/Consent Orders{" "}
+<Tooltip title="Regulatory or litigation matters that could significantly impact the day-to-day operations of your company, such as a fine exceeding 10% of your revenue. This also includes any legal issues that, if unfavorable, would cause a partner institution to have considerable concern about your ability to perform under a contract." arrow>
+                <IconButton
+                  aria-label="info"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModalOpen(
+                      "Regulatory or litigation matters that could significantly impact the day-to-day operations of your company, such as a fine exceeding 10% of your revenue. This also includes any legal issues that, if unfavorable, would cause a partner institution to have considerable concern about your ability to perform under a contract."
+                    );
+                  }}
+                >
+                  <Info color="primary" />
+                </IconButton></Tooltip>
+              </>,
+              <>
                 {renderSection(
-                  "collapse",
-                  "B. Legal proceedings/Consent orders",
+                  "collapsive",
+                  "A. Legal proceedings/Consent orders",
                   <>
                     <Controller
                       name="legalProceedingDescription"
@@ -932,7 +979,7 @@ collapse: {
                     />
 
                     {renderUploadSection(
-                      "collapse",
+                      "SupportingDocuments",
                       "Upload Supporting Documents"
                     )}
                   </>
@@ -943,31 +990,30 @@ collapse: {
             {renderSection(
               "financialStatements",
               "7. Financial Information",
+
               <>
-                {renderSection(
-                  "collapse",
-                  <Box>
-                    <Typography variant="h5">
-                      A. Audited Financial Statement
-                      <IconButton
-                        aria-label="info"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleModalOpen(
-                            "If an audited financial statement is not available, please provide management certified financial statements along with explanation of why audited financials were not available."
-                          );
-                        }}
-                      >
-                        <Info color="primary" />
-                      </IconButton>
-                    </Typography>
-                    {renderUploadSection("collapse")}
-                  </Box>
+                {renderUploadSection(
+                  "AuditedFinancial",
+                  <>
+                    A. Audited Financial Statement
+                    <Tooltip title= "If an audited financial statement is not available, please provide management certified financial statements along with an explanation of why audited financials were not available." arrow>
+                    <IconButton
+                      aria-label="info"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleModalOpen(
+                          "If an audited financial statement is not available, please provide management certified financial statements along with an explanation of why audited financials were not available."
+                        );
+                      }}
+                    >
+                      <Info color="primary" />
+                    </IconButton></Tooltip>
+                  </>
                 )}
 
                 {renderSection(
                   "insuranceDetails",
-                  "Insurance Details",
+                  "B.Insurance Details",
                   <>
                     <Controller
                       name="insuranceTypes"
@@ -1032,40 +1078,62 @@ collapse: {
                 )}
                 {renderUploadSection(
                   "insuranceCertificates",
-                  "B. Insurance Certificates"
+                  "C. Insurance Certificates"
                 )}
               </>
             )}
 
             {renderSection(
               "organizationalChart",
-              "8. Corporate Formalities",
               <>
-                {renderUploadSection(
-                  "collapse",
-                  "Upload Organizational Chart"
-                )}
+                8. Corporate Formalities
+                <Tooltip title="Corporate formalities should include organizational documents (e.g., Operating Agreements for LLCs, Bylaws for corporations), a certificate of good standing, and a corporate resolution or similar document confirming signing authority."arrow>
+                <IconButton
+                  aria-label="info"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModalOpen(
+                      "Corporate formalities should include organizational documents (e.g., Operating Agreements for LLCs, Bylaws for corporations), a certificate of good standing, and a corporate resolution or similar document confirming signing authority."
+                    );
+                  }}
+                >
+                  <Info color="primary" />
+                </IconButton></Tooltip>
+              </>,
+              <>
+                {renderUploadSection("Chart", "A. Upload Organizational Chart")}
                 {renderUploadSection(
                   "corporateDocuments",
-                  "Upload Corporate Documents"
+                  "B. Upload Corporate Documents"
                 )}
               </>
             )}
 
             {renderSection(
               "compliancePolicies",
-              "9. Compliance Management System Components",
+              <>
+                9. Compliance Management System Components
+                <Tooltip title="Please upload all relevant Policies, procedures, and guidelines related to your current Compliance Management System (“CMS”). Your CMS should include, as applicable, a/an AI Governance Policy, BSA/AML/OFAC Policy, Complaint Management Policy, Credit Policy, Disaster Recovery Plan, Fair Credit Reporting Policy, Fair Lending Policy, Information Security Policy, Loan Servicing Policy, Record Retention Policy or Schedule, Reg. E & E-Sign Policy, Risk Management Policy, Privacy Policy, Reg. Z Policy, Regulatory Compliance Policy, Third-Party Risk Management Policy, and UDAAP Policy, or similar Policies along with related procedures and training"arrow>
+                <IconButton
+                  aria-label="info"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModalOpen(
+                      "Please upload all relevant Policies, procedures, and guidelines related to your current Compliance Management System (“CMS”). Your CMS should include, as applicable, a/an AI Governance Policy, BSA/AML/OFAC Policy, Complaint Management Policy, Credit Policy, Disaster Recovery Plan, Fair Credit Reporting Policy, Fair Lending Policy, Information Security Policy, Loan Servicing Policy, Record Retention Policy or Schedule, Reg. E & E-Sign Policy, Risk Management Policy, Privacy Policy, Reg. Z Policy, Regulatory Compliance Policy, Third-Party Risk Management Policy, and UDAAP Policy, or similar Policies along with related procedures and training"
+                    );
+                  }}
+                >
+                  <Info color="primary" />
+                </IconButton></Tooltip>
+              </>,
               <>
                 {renderUploadSection(
-                  "collapse",
-                  "Upload Compliance Policies"
+                  "CompliancePolicies",
+                  "A.Upload Compliance Policies"
                 )}
-                {renderUploadSection("auditReports", "Upload Audit Reports")}
-                {renderUploadSection("soc2Report", "Upload SOC 2 Report")}
-                {renderUploadSection(
-                  "trainingPrograms",
-                  "Upload Training Programs"
-                )}
+                {renderUploadSection("auditReports", "B.Upload Audit Reports")}
+                {renderUploadSection("soc2Report", "C.Upload SOC 2 Report")}
+                {renderUploadSection("trainingPrograms", "D.Training Programs")}
               </>
             )}
 
@@ -1132,7 +1200,7 @@ collapse: {
                     )}
                   />
                   {renderUploadSection(
-                    "executiveBios",
+                    "DetailedExecutive",
                     "Detailed Executive Bios"
                   )}
                 </>
@@ -1143,17 +1211,14 @@ collapse: {
               "complianceCertifications",
               "11. Additional Relevant Information",
               <>
-                {renderUploadSection(
-                  "collapse",
-                  "Relevant Certifications"
-                )}
+                {renderUploadSection("Relevant", "A.Relevant Certifications")}
                 {renderUploadSection(
                   "riskManagementPlans",
-                  "Risk Management Documentation"
+                  "B.Risk Management Documentation"
                 )}
                 {renderUploadSection(
                   "incidentResponsePlans",
-                  "Incident Response Plans"
+                  "C.Incident Response Plans"
                 )}
               </>
             )}
